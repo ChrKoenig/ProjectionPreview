@@ -2,4 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+data/proj_raw.csv
 playground.R
+validate_projections.R
