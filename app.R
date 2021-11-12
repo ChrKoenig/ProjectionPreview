@@ -72,6 +72,8 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output) {
+  
+  # Function to slightly enlarge bbox of focal region 
   scale_bbox = function(bbox, scaling=1.1){
     ext_lon = bbox["xmax"] - bbox["xmin"]
     ext_lat = bbox["ymax"] - bbox["ymin"]
@@ -87,6 +89,7 @@ server <- function(input, output) {
     return(scaled_bbox)
   }
   
+  # Create region bbox
   observeEvent(input$region, handlerExpr = {
     if(input$region %in% world$name){ # Countries
       region_bbox = filter(world, name == input$region) %>% st_bbox() %>% scale_bbox()
@@ -122,15 +125,6 @@ server <- function(input, output) {
     }
   })
   
-  observeEvent(input$reset, {
-    updateSelectInput(inputId="projection", selected="Lat/long (Geodetic)")
-    updateSelectInput(inputId="region", selected="World")
-    updateSliderInput(inputId="longitude", value=c(-180,180))
-    updateSliderInput(inputId="latitude", value=c(-90,90))
-    updateCheckboxInput(inputId="show_grid", value=T)
-    updateCheckboxInput(inputId="show_borders", value=T)
-  })
-
   border_color = reactive({
     if(input$show_borders){
       "grey"
@@ -146,6 +140,15 @@ server <- function(input, output) {
     fill_color
   })
   
+  observeEvent(input$reset, {
+    updateSelectInput(inputId="projection", selected="Lat/long (Geodetic)")
+    updateSelectInput(inputId="region", selected="World")
+    updateSliderInput(inputId="longitude", value=c(-180,180))
+    updateSliderInput(inputId="latitude", value=c(-90,90))
+    updateCheckboxInput(inputId="show_grid", value=T)
+    updateCheckboxInput(inputId="show_borders", value=T)
+  })
+
   output$map = renderPlot(
     if(is.null(input$projection)){
       ggplot() + theme_void()
